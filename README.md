@@ -8,11 +8,6 @@ This module allows you to list and stream files from a ZIP archive in a React Na
 yarn add react-native-zip-stream
 ```
 
-## Autolinking
-
-- **iOS:** Use CocoaPods to add `ZipArchive`.
-- **Android:** The module will be automatically linked if you are using React Native 0.60+.
-
 ## Usage
 
 ### Importing the Module
