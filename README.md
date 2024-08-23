@@ -5,7 +5,7 @@ Ce module permet de lister et de streamer des fichiers à partir d'une archive Z
 ## Installation
 
 ```
-npm install react-native-zip-stream
+yarn add react-native-zip-stream
 ```
 
 ## Autolinking
