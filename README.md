@@ -1,62 +1,80 @@
 # react-native-zip-stream
 
-This module allows you to list and stream files from a ZIP archive in a React Native application.
+A React Native module for streaming files from ZIP archives.
 
 ## Installation
 
-```bash
-yarn add react-native-zip-stream
-```
+1. Add the dependency to your project.
+
+   ```bash
+   npm install react-native-zip-stream
+   ```
+
+
+2. For iOS, install the required CocoaPods dependencies:
+
+   ```bash
+   cd ios
+   pod install
+   ```
 
 ## Usage
 
-### Importing the Module
+### List Zip Contents
 
-```javascript
-import { listZipContents, streamFileFromZip } from 'react-native-zip-stream';
+Lists the contents of a ZIP file.
 
+```typescript
+import { listZipContents } from 'react-native-zip-stream';
 
-```
+const zipFilePath = '/path/to/your/zipfile.zip';
 
-### List Files in ZIP
-
-```javascript
-/**
- * Lists all files in the ZIP archive.
- * @param {string} zipFilePath - Path to the ZIP file.
- * @returns {Promise<string[]>} - A promise that resolves with the list of file names.
- */
-const listZipFiles = async (zipFilePath) => {
-  try {
-    const fileNames = await listZipContents(zipFilePath);
+listZipContents(zipFilePath)
+  .then((fileNames) => {
     console.log('Files in ZIP:', fileNames);
-    return fileNames;
-  } catch (error) {
+  })
+  .catch((error) => {
     console.error('Error listing ZIP contents:', error);
-    throw error;
-  }
-};
+  });
 ```
 
-### Stream a Specific File from ZIP
+### Stream File from Zip
 
+Streams a specific file from a ZIP archive. The data can be returned in three formats: `base64`, `arraybuffer`, or `string`.
 
-```javascript
-const exampleUsage = async () => {
+#### Parameters
+
+- `zipFilePath`: Path to the ZIP file.
+- `entryName`: Name of the file inside the ZIP to extract.
+- `type`: Specifies the format of the output data. Can be one of:
+  - `"base64"` (default): Returns the file content as a Base64-encoded string.
+  - `"arraybuffer"`: Returns the file content as an ArrayBuffer (represented as an array of `UInt8` in Swift).
+  - `"string"`: Returns the file content as a UTF-8 string.
+
+#### Example
+
+```typescript
+import { streamFileFromZip } from 'react-native-zip-stream';
+
+const zipFilePath = '/path/to/your/zipfile.zip';
+const entryName = 'fileInsideZip.txt';
+
+const example = async () => {
   try {
-    // List the files inside the ZIP archive
-    const files = await listZipContents('/path/to/your/zipfile.zip');
-    console.log('Files:', files);
+    // Example usage with 'base64' type
+    const base64Data = await streamFileFromZip(zipFilePath, entryName, 'base64');
+    console.log('Base64 Data:', base64Data);
 
-    // Stream a specific file from the ZIP archive
-    const fileData = await streamFileFromZip('/path/to/your/zipfile.zip', 'fileInsideZip.txt');
-    console.log('Streaming completed:', fileData);
+    // Example usage with 'arraybuffer' type
+    const arrayBufferData = await streamFileFromZip(zipFilePath, entryName, 'arraybuffer');
+    console.log('ArrayBuffer Data:', new Uint8Array(arrayBufferData));
+
+    // Example usage with 'string' type
+    const stringData = await streamFileFromZip(zipFilePath, entryName, 'string');
+    console.log('String Data:', stringData);
     
-    // You can handle the base64 data of the streamed file here, e.g., save it to disk or process it further.
   } catch (error) {
     console.error('Error:', error);
   }
 };
-
 ```
-

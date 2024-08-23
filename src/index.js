@@ -1,10 +1,7 @@
-import { NativeModules, NativeEventEmitter } from 'react-native';
+import { NativeModules } from 'react-native';
 
 // Expose the module from the native code
 const { ZipStreamModule } = NativeModules;
-
-// Create an instance of NativeEventEmitter to listen to events
-const zipStreamEvents = new NativeEventEmitter(ZipStreamModule);
 
 /**
  * Lists the contents of a ZIP file.
@@ -30,11 +27,12 @@ export const listZipContents = (zipFilePath) => {
  * @param {Function} progressCallback - Callback function to handle streaming progress.
  * @returns {Promise<string>} - Promise resolving when streaming is completed.
  */
-export const streamFileFromZip = async (zipFilePath, entryName) => {
+export const streamFileFromZip = async (zipFilePath, entryName, type = 'base64') => {
   try {
     const base64Data = await ZipStreamModule.streamFileFromZip(
       zipFilePath,
       entryName,
+      type
     );
     return base64Data;
   } catch (error) {

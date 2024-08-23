@@ -26,7 +26,7 @@ class ZipStreamModule: NSObject {
     }
 
     @objc
-       func streamFileFromZip(_ zipFilePath: String, entryName: String, resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
+       func streamFileFromZip(_ zipFilePath: String, entryName: String, type: String, resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
            do {
                let zipFile = ZipArchive()
                if !zipFile.unzipOpenFile(zipFilePath) {
@@ -40,9 +40,25 @@ class ZipStreamModule: NSObject {
                guard let fileContents = fileData[entryName] as? Data else {
                    throw NSError(domain: "com.zipstream", code: 404, userInfo: [NSLocalizedDescriptionKey: "File not found in ZIP"])
                }
-               
-               let base64Data = fileContents.base64EncodedString()
-               resolve(base64Data)
+                
+               if type == "base64" {
+                  let base64Data = fileContents.base64EncodedString()
+                   resolve(base64Data)
+               } else if type == "arraybuffer" {
+                   let arrayBuffer = [UInt8](fileContents)
+                   resolve(arrayBuffer)
+               }
+                  
+            else if type == "string" {
+                  if let stringData = String(data: fileContents, encoding: .utf8) {
+                      resolve(stringData)
+                     
+                  } else {
+                      throw NSError(domain: "com.zipstream", code: 400, userInfo: [NSLocalizedDescriptionKey: "Failed to convert data to string"])
+                  }
+              } else {
+                  throw NSError(domain: "com.zipstream", code: 400, userInfo: [NSLocalizedDescriptionKey: "Invalid type specified"])
+              }
                
                zipFile.unzipCloseFile()
            } catch let error {

@@ -7,6 +7,7 @@ RCT_EXTERN_METHOD(listZipContents:(NSString *)zipFilePath resolver:(RCTPromiseRe
 RCT_EXTERN_METHOD(
   streamFileFromZip:(NSString *)zipFilePath
   entryName:(NSString *)entryName
+  type:(NSString *)type
   resolver:(RCTPromiseResolveBlock)resolve
   rejecter:(RCTPromiseRejectBlock)reject
 )
