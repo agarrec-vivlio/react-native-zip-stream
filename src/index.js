@@ -1,4 +1,5 @@
 import { NativeModules, NativeEventEmitter } from 'react-native';
+
 // Expose the module from the native code
 const { ZipStreamModule } = NativeModules;
 
@@ -31,34 +32,14 @@ export const listZipContents = (zipFilePath) => {
  */
 export const streamFileFromZip = async (zipFilePath, entryName) => {
   try {
-    const base64Data = await new Promise((resolve, reject) => {
-      ZipStreamModule.streamFileFromZip(
-        zipFilePath,
-        entryName,
-        resolve,
-        reject
-      );
-    });
+    const base64Data = await ZipStreamModule.streamFileFromZip(
+      zipFilePath,
+      entryName,
+    );
     return base64Data;
   } catch (error) {
-    console.error('Error streaming file from ZIP:', error);
+    console.error('😷Error streaming file from ZIP:', error);
     throw error;
   }
 };
 
-/**
- * Example usage of listening to events emitted by the native module.
- * @param {Function} eventCallback - Callback to handle events from the native module.
- */
-export const subscribeToEvents = (eventCallback) => {
-  const eventSubscription = zipStreamEvents.addListener('EventName', (event) => {
-    if (eventCallback) {
-      eventCallback(event);
-    }
-  });
-
-  // Clean up the subscription when no longer needed
-  return () => {
-    eventSubscription.remove();
-  };
-};
