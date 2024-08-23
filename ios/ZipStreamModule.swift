@@ -26,22 +26,27 @@ class ZipStreamModule: NSObject {
     }
 
     @objc
-    func streamFileFromZip(_ zipFilePath: String, entryName: String, progressCallback: @escaping RCTResponseSenderBlock, resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
-        do {
-            let zipFile = ZipArchive()
-            if !zipFile.unzipOpenFile(zipFilePath) {
-                throw NSError(domain: "com.zipstream", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to open ZIP file"])
-            }
-            guard let fileData = zipFile.unzipFileToMemory() else {
-                throw NSError(domain: "com.zipstream", code: 404, userInfo: [NSLocalizedDescriptionKey: "File not found in ZIP"])
-            }
-            let fileContents = fileData[entryName] as? Data ?? Data()
-            let base64Data = fileContents.base64EncodedString()
-            progressCallback([base64Data])
-            resolve("Streaming completed")
-            zipFile.unzipCloseFile()
-        } catch let error {
-            reject("ERROR_STREAMING_FILE", "Failed to stream the file", error)
-        }
-    }
+       func streamFileFromZip(_ zipFilePath: String, entryName: String, resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
+           do {
+               let zipFile = ZipArchive()
+               if !zipFile.unzipOpenFile(zipFilePath) {
+                   throw NSError(domain: "com.zipstream", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to open ZIP file"])
+               }
+               
+               guard let fileData = zipFile.unzipFileToMemory() else {
+                   throw NSError(domain: "com.zipstream", code: 404, userInfo: [NSLocalizedDescriptionKey: "File not found in ZIP"])
+               }
+               
+               guard let fileContents = fileData[entryName] as? Data else {
+                   throw NSError(domain: "com.zipstream", code: 404, userInfo: [NSLocalizedDescriptionKey: "File not found in ZIP"])
+               }
+               
+               let base64Data = fileContents.base64EncodedString()
+               resolve(base64Data)
+               
+               zipFile.unzipCloseFile()
+           } catch let error {
+               reject("ERROR_STREAMING_FILE", "Failed to stream the file", error)
+           }
+       }
 }

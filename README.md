@@ -1,32 +1,64 @@
 # react-native-zip-stream
 
-Ce module permet de lister et de streamer des fichiers à partir d'une archive ZIP dans une application React Native.
+This module allows you to list and stream files from a ZIP archive in a React Native application.
 
 ## Installation
 
-```
+```bash
 yarn add react-native-zip-stream
 ```
 
 ## Autolinking
 
-- **iOS:** Utilisez CocoaPods pour ajouter `ZipArchive`.
-- **Android:** Le module sera automatiquement lié si vous utilisez React Native 0.60+.
+- **iOS:** Use CocoaPods to add `ZipArchive`.
+- **Android:** The module will be automatically linked if you are using React Native 0.60+.
 
 ## Usage
 
+### Importing the Module
+
 ```javascript
-import { listZipFiles, streamZipFile } from 'react-native-zip-stream';
+import { listZipContents, streamFileFromZip } from 'react-native-zip-stream';
 
-// Liste des fichiers dans le ZIP
-const files = await listZipFiles('/path/to/your/zipfile.zip');
 
-// Streamer un fichier spécifique du ZIP
-streamZipFile('/path/to/your/zipfile.zip', 'fileInsideZip.txt')
-  .then(() => console.log('Streaming complet'))
-  .catch(error => console.error('Erreur lors du streaming:', error));
 ```
 
-## License
+### List Files in ZIP
 
-[MIT License](LICENSE)
+```javascript
+/**
+ * Lists all files in the ZIP archive.
+ * @param {string} zipFilePath - Path to the ZIP file.
+ * @returns {Promise<string[]>} - A promise that resolves with the list of file names.
+ */
+const listZipFiles = async (zipFilePath) => {
+  try {
+    const fileNames = await listZipContents(zipFilePath);
+    console.log('Files in ZIP:', fileNames);
+    return fileNames;
+  } catch (error) {
+    console.error('Error listing ZIP contents:', error);
+    throw error;
+  }
+};
+```
+
+### Stream a Specific File from ZIP
+
+
+```javascript
+const exampleUsage = async () => {
+  try {
+    const files = await listZipFiles('/path/to/your/zipfile.zip');
+    console.log('Files:', files);
+    
+    await streamFileFromZip('/path/to/your/zipfile.zip', 'fileInsideZip.txt');
+    console.log('Streaming completed');
+  } catch (error) {
+    console.error('Error:', error);
+  }
+};
+
+exampleUsage();
+```
+

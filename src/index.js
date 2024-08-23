@@ -1,5 +1,4 @@
 import { NativeModules, NativeEventEmitter } from 'react-native';
-
 // Expose the module from the native code
 const { ZipStreamModule } = NativeModules;
 
@@ -30,26 +29,21 @@ export const listZipContents = (zipFilePath) => {
  * @param {Function} progressCallback - Callback function to handle streaming progress.
  * @returns {Promise<string>} - Promise resolving when streaming is completed.
  */
-export const streamFileFromZip = (zipFilePath, entryName, progressCallback) => {
-  return new Promise((resolve, reject) => {
-    const onProgress = (base64Data) => {
-      if (progressCallback) {
-        progressCallback(base64Data);
-      }
-    };
-
-    ZipStreamModule.streamFileFromZip(zipFilePath, entryName, (data) => {
-      onProgress(data[0]);
-    })
-      .then(() => {
-        console.log('Streaming completed');
-        resolve('Streaming completed');
-      })
-      .catch((error) => {
-        console.error('Error streaming file:', error);
-        reject(error);
-      });
-  });
+export const streamFileFromZip = async (zipFilePath, entryName) => {
+  try {
+    const base64Data = await new Promise((resolve, reject) => {
+      ZipStreamModule.streamFileFromZip(
+        zipFilePath,
+        entryName,
+        resolve,
+        reject
+      );
+    });
+    return base64Data;
+  } catch (error) {
+    console.error('Error streaming file from ZIP:', error);
+    throw error;
+  }
 };
 
 /**
