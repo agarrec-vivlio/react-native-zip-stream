@@ -24,7 +24,7 @@ export const listZipContents = (zipFilePath) => {
  * Streams a specific file from the ZIP.
  * @param {string} zipFilePath - Path to the ZIP file.
  * @param {string} entryName - Name of the file to stream.
- * @param {Function} progressCallback - Callback function to handle streaming progress.
+ * @param {string} type - Specifies the format of the output data : base64, arraybuffer, string
  * @returns {Promise<string>} - Promise resolving when streaming is completed.
  */
 export const streamFileFromZip = async (zipFilePath, entryName, type = 'base64') => {
