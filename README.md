@@ -29,13 +29,14 @@ import { listZipContents } from 'react-native-zip-stream';
 
 const zipFilePath = '/path/to/your/zipfile.zip';
 
-listZipContents(zipFilePath)
-  .then((fileNames) => {
+const exampleListZipContents = async () => {
+  try {
+    const fileNames = await listZipContents(zipFilePath);
     console.log('Files in ZIP:', fileNames);
-  })
-  .catch((error) => {
+  } catch (error) {
     console.error('Error listing ZIP contents:', error);
-  });
+  }
+};
 ```
 
 ### Stream File from Zip
