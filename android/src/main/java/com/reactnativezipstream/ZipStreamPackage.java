@@ -1,4 +1,5 @@
-package com.zipstream;
+
+package com.reactnativezipstream;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;

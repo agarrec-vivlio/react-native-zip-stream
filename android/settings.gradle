@@ -1,0 +1,4 @@
+
+include ':react-native-zip-stream'
+project(':react-native-zip-stream').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-zip-stream/android')
+// android/settings.gradle
