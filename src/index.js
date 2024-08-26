@@ -8,16 +8,8 @@ const { ZipStreamModule } = NativeModules;
  * @param {string} zipFilePath - Path to the ZIP file.
  * @returns {Promise<Array<string>>} - Promise resolving to an array of file names in the ZIP.
  */
-export const listZipContents = (zipFilePath) => {
-  return ZipStreamModule.listZipContents(zipFilePath)
-    .then((fileNames) => {
-      console.log('Files in ZIP:', fileNames);
-      return fileNames;
-    })
-    .catch((error) => {
-      console.error('Error listing ZIP contents:', error);
-      throw error;
-    });
+export const listZipContents = async (zipFilePath) => {
+  return await ZipStreamModule.listZipContents(zipFilePath)
 };
 
 /**
@@ -28,16 +20,10 @@ export const listZipContents = (zipFilePath) => {
  * @returns {Promise<string>} - Promise resolving when streaming is completed.
  */
 export const streamFileFromZip = async (zipFilePath, entryName, type = 'base64') => {
-  try {
-    const base64Data = await ZipStreamModule.streamFileFromZip(
-      zipFilePath,
-      entryName,
-      type
-    );
-    return base64Data;
-  } catch (error) {
-    console.error('😷Error streaming file from ZIP:', error);
-    throw error;
-  }
+  return await ZipStreamModule.streamFileFromZip(
+    zipFilePath,
+    entryName,
+    type
+  );
 };
 
