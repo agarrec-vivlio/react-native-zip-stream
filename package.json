@@ -1,16 +1,21 @@
 {
   "name": "react-native-zip-stream",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A React Native module for streaming ZIP files.",
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "homepage": "https://github.com/agarrec-vivlio/react-native-zip-stream#readme",
   "keywords": [
     "react-native",
     "zip",
     "stream"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agarrec-vivlio/react-native-zip-stream.git"
+  },
   "author": "",
   "license": "MIT",
   "dependencies": {
