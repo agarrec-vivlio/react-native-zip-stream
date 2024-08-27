@@ -20,10 +20,12 @@ git add package.json yarn.lock
 git commit -m "Bump version to $new_version"
 
 # Push to GitHub
-git push origin main
+git push origin-vivlio main
 
 # Create a tag with the new version
 git tag "v$new_version"
-git push origin "v$new_version"
+git push origin-vivlio "v$new_version"
+
+npm publish
 
 echo "Version $new_version successfully created and tagged on GitHub."
