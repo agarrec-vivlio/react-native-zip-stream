@@ -1,3 +1,4 @@
+
 import Foundation
 import React
 import ZipArchive
@@ -65,4 +66,29 @@ class ZipStreamModule: NSObject {
                reject("ERROR_STREAMING_FILE", "Failed to stream the file", error)
            }
        }
+    @objc
+    func unzipFile(_ zipFilePath: String, destinationPath: String, resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
+        do {
+            let zipFile = ZipArchive()
+            if !zipFile.unzipOpenFile(zipFilePath) {
+                throw NSError(domain: "com.zipstream", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to open ZIP file"])
+            }
+            let success = zipFile.unzipFile(to: destinationPath, overwrite: true)
+            zipFile.unzipCloseFile()
+            resolve(success)
+        } catch let error {
+            reject("ERROR_UNZIPPING_FILE", "Failed to unzip the file", error)
+        }
+    }
+
+    @objc
+    func createZipFile(_ destinationPath: String, sourcePath: String, resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
+        do {
+            let success = ZipArchive.createZipFile2(destinationPath, withContentsOfDirectory: sourcePath)
+            resolve(success)
+        } catch let error {
+            reject("ERROR_CREATING_ZIP", "Failed to create ZIP file", error)
+        }
+    }
 }
+
