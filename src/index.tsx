@@ -6,7 +6,7 @@ const LINKING_ERROR =
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo Go\n';
 
-const ZipStream = NativeModules.ZipStream
+const ZipStreamModule = NativeModules.ZipStream
   ? NativeModules.ZipStream
   : new Proxy(
       {},
@@ -17,6 +17,84 @@ const ZipStream = NativeModules.ZipStream
       }
     );
 
-export function multiply(a: number, b: number): Promise<number> {
-  return ZipStream.multiply(a, b);
-}
+const validateStringParam = (param: string, paramName: string): void => {
+  if (typeof param !== 'string' || param.trim() === '') {
+    throw new Error(`${paramName} should be a non-empty string.`);
+  }
+};
+
+// Enhanced logging function
+const log = (message: string, error?: Error) => {
+  if (__DEV__) {
+    console.log(`[DEV LOG]: ${message}`);
+    if (error) {
+      console.error(error);
+    }
+  } else {
+    // In production, you might send logs to a logging service
+    // Example: sendLogToService({ message, error });
+  }
+};
+
+export const listZipContents = async (
+  zipFilePath: string
+): Promise<string[]> => {
+  validateStringParam(zipFilePath, 'zipFilePath');
+
+  try {
+    return await ZipStreamModule.listZipContents(zipFilePath);
+  } catch (error) {
+    log('Error listing ZIP contents', error);
+    throw error;
+  }
+};
+
+export const streamFileFromZip = async (
+  zipFilePath: string,
+  entryName: string,
+  type: 'base64' | 'arraybuffer' | 'string' = 'base64'
+): Promise<string | ArrayBuffer | Uint8Array> => {
+  validateStringParam(zipFilePath, 'zipFilePath');
+  validateStringParam(entryName, 'entryName');
+
+  try {
+    return await ZipStreamModule.streamFileFromZip(
+      zipFilePath,
+      entryName,
+      type
+    );
+  } catch (error) {
+    log('Error streaming file from ZIP', error);
+    throw error;
+  }
+};
+
+export const unzipFile = async (
+  zipFilePath: string,
+  destinationPath: string
+): Promise<boolean> => {
+  validateStringParam(zipFilePath, 'zipFilePath');
+  validateStringParam(destinationPath, 'destinationPath');
+
+  try {
+    return await ZipStreamModule.unzipFile(zipFilePath, destinationPath);
+  } catch (error) {
+    log('Error unzipping file', error);
+    throw error;
+  }
+};
+
+export const createZipFile = async (
+  destinationPath: string,
+  sourcePath: string
+): Promise<boolean> => {
+  validateStringParam(destinationPath, 'destinationPath');
+  validateStringParam(sourcePath, 'sourcePath');
+
+  try {
+    return await ZipStreamModule.createZipFile(destinationPath, sourcePath);
+  } catch (error) {
+    log('Error creating ZIP file', error);
+    throw error;
+  }
+};

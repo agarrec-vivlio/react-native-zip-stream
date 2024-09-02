@@ -7,3 +7,31 @@ require "#{ws_dir}/node_modules/react-native-test-app/test_app.rb"
 workspace 'ZipStreamExample.xcworkspace'
 
 use_test_app!
+
+use_frameworks! :linkage => :static
+
+# React Native specific pods
+pod 'React', :path => '../node_modules/react-native/', :modular_headers => true
+pod 'React-Core', :path => '../node_modules/react-native/', :modular_headers => true
+pod 'React-CoreModules', :path => '../node_modules/react-native/React/CoreModules', :modular_headers => true
+pod 'React-RCTText', :path => '../node_modules/react-native/Libraries/Text', :modular_headers => true
+pod 'React-RCTImage', :path => '../node_modules/react-native/Libraries/Image', :modular_headers => true
+pod 'React-RCTNetwork', :path => '../node_modules/react-native/Libraries/Network', :modular_headers => true
+pod 'React-RCTSettings', :path => '../node_modules/react-native/Libraries/Settings', :modular_headers => true
+pod 'React-RCTActionSheet', :path => '../node_modules/react-native/Libraries/ActionSheetIOS', :modular_headers => true
+pod 'React-RCTAnimation', :path => '../node_modules/react-native/Libraries/NativeAnimation', :modular_headers => true
+pod 'React-RCTLinking', :path => '../node_modules/react-native/Libraries/LinkingIOS', :modular_headers => true
+# pod 'React-RCTWebSocket', :path => '../node_modules/react-native/Libraries/WebSocket', :modular_headers => true
+pod 'ReactCommon', :path => '../node_modules/react-native/ReactCommon', :modular_headers => true
+
+# Other necessary pods
+pod 'ZipArchive', :modular_headers => true
+
+# Ensure no duplicates
+pre_install do |installer|
+  installer.pod_targets.each do |pod|
+    if pod.name == 'React-Core'
+      pod.module_name = 'ReactCore'
+    end
+  end
+end
