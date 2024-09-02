@@ -1,3 +1,5 @@
 scripts/
 example/
 node_modules/
+.ghithub/
+.yarn/
