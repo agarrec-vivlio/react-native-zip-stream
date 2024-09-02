@@ -24,7 +24,7 @@ const validateStringParam = (param: string, paramName: string): void => {
 };
 
 // Enhanced logging function
-const log = (message: string, error?: Error) => {
+const log = (message: string, error?: any) => {
   if (__DEV__) {
     console.log(`[DEV LOG]: ${message}`);
     if (error) {
