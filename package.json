@@ -1,6 +1,6 @@
 {
   "name": "react-native-zip-stream",
-  "version": "0.1.7",
+  "version": "1.0.5",
   "description": "A React Native module for streaming ZIP files.",
   "source": "./src/index.tsx",
   "main": "./lib/commonjs/index.js",
