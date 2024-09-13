@@ -7,6 +7,7 @@ A React Native module for working with ZIP archives. This module allows you to l
 ## Table of Contents
 
 - [Installation](#installation)
+- [Expo Compatibility](#expo-compatibility)
 - [Usage](#usage)
   - [List Zip Contents](#list-zip-contents)
   - [Stream File from Zip](#stream-file-from-zip)
@@ -41,6 +42,30 @@ To install the module, follow these steps:
    pod install
    ```
 
+## Expo Compatibility
+
+`react-native-zip-stream` can also be used in Expo projects with some additional configuration. If you're using Expo and want to access the app's local document directory (e.g., to read and write ZIP files), follow these steps:
+
+1. Install the package:
+
+   ```bash
+   expo install react-native-zip-stream
+   ```
+
+2. Add the plugin configuration to your `app.json`:
+
+   ```json
+   {
+     "expo": {
+       "plugins": ["./node_modules/react-native-zip-stream/plugin"]
+     }
+   }
+   ```
+
+3. Run `expo prebuild` to generate the necessary native code for your Expo project.
+
+This setup ensures that the app has the correct permissions to access local files and manipulate ZIP files on both Android and iOS.
+
 ## Usage
 
 ### List Zip Contents
@@ -58,10 +83,6 @@ Extracts all the contents of a ZIP file to a specified destination directory.
 ### Create Zip File
 
 Creates a new ZIP file from the contents of a specified directory.
-
-### Unzip File with Progress
-
-Extracts all the contents of a ZIP file to a specified destination directory with progress updates. This function is useful for handling large ZIP files where you want to track the extraction progress.
 
 ## API Reference
 
@@ -116,20 +137,6 @@ Creates a new ZIP file from the contents of a specified directory.
 #### Returns
 
 - `Promise<boolean>` - A promise that resolves to `true` if the ZIP file is created successfully.
-
-### unzipFileWithProgress
-
-Extracts all the contents of a ZIP file to a specified destination directory with progress updates.
-
-#### Parameters
-
-- `zipFilePath`: `string` - The full path to the ZIP file.
-- `destinationPath`: `string` - The path where the contents of the ZIP file should be extracted.
-- `progressCallback`: `function` - A callback function that receives progress updates.
-
-#### Returns
-
-- `Promise<boolean>` - A promise that resolves to `true` if the operation is successful.
 
 ## Examples
 
