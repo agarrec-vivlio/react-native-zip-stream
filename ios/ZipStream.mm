@@ -11,12 +11,13 @@ RCT_EXTERN_METHOD(listZipContents:(NSString *)zipFilePath
 RCT_EXTERN_METHOD(streamFileFromZip:(NSString *)zipFilePath
                  entryName:(NSString *)entryName
                  type:(NSString *)type
+                 password:(NSString *)password
                  resolve:(RCTPromiseResolveBlock)resolve
                  reject:(RCTPromiseRejectBlock)reject)
 
-// Exporting the unzipFile method
 RCT_EXTERN_METHOD(unzipFile:(NSString *)zipFilePath
                  destinationPath:(NSString *)destinationPath
+                 password:(NSString *)password
                  resolve:(RCTPromiseResolveBlock)resolve
                  reject:(RCTPromiseRejectBlock)reject)
 

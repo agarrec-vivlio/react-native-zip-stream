@@ -52,7 +52,8 @@ export const listZipContents = async (
 export const streamFileFromZip = async (
   zipFilePath: string,
   entryName: string,
-  type: 'base64' | 'arraybuffer' | 'string' = 'base64'
+  type: 'base64' | 'arraybuffer' | 'string' = 'base64',
+  password?: string
 ): Promise<string | ArrayBuffer | Uint8Array> => {
   validateStringParam(zipFilePath, 'zipFilePath');
   validateStringParam(entryName, 'entryName');
@@ -61,7 +62,8 @@ export const streamFileFromZip = async (
     return await ZipStreamModule.streamFileFromZip(
       zipFilePath,
       entryName,
-      type
+      type,
+      password || null
     );
   } catch (error) {
     log('Error streaming file from ZIP', error);
@@ -71,13 +73,18 @@ export const streamFileFromZip = async (
 
 export const unzipFile = async (
   zipFilePath: string,
-  destinationPath: string
+  destinationPath: string,
+  password?: string
 ): Promise<boolean> => {
   validateStringParam(zipFilePath, 'zipFilePath');
   validateStringParam(destinationPath, 'destinationPath');
 
   try {
-    return await ZipStreamModule.unzipFile(zipFilePath, destinationPath);
+    return await ZipStreamModule.unzipFile(
+      zipFilePath,
+      destinationPath,
+      password || null
+    );
   } catch (error) {
     log('Error unzipping file', error);
     throw error;

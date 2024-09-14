@@ -10,6 +10,8 @@ import android.util.Base64
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import java.util.zip.ZipOutputStream
+import net.lingala.zip4j.ZipFile
+import net.lingala.zip4j.exception.ZipException
 
 class ZipStreamModule(reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext) {
@@ -38,76 +40,68 @@ class ZipStreamModule(reactContext: ReactApplicationContext) :
   }
 
   @ReactMethod
-  fun streamFileFromZip(zipFilePath: String?, entryName: String?, type: String, promise: Promise) {
-    try {
-      val zipFile = ZipFile(zipFilePath)
-      val entry = zipFile.getEntry(entryName)
+  fun streamFileFromZip(zipFilePath: String, entryName: String, type: String, password: String?, promise: Promise) {
+      try {
+          val zipFile = ZipFile(zipFilePath)
 
-      if (entry == null) {
-        promise.reject("ERROR_STREAMING_FILE", "File not found in ZIP")
-        return
+          if (zipFile.isEncrypted && password != null) {
+              zipFile.setPassword(password.toCharArray())
+          }
+
+          val entry = zipFile.getFileHeader(entryName)
+
+          if (entry == null) {
+              promise.reject("ERROR_STREAMING_FILE", "File not found in ZIP")
+              return
+          }
+
+          val inputStream = zipFile.getInputStream(entry)
+          val byteArrayOutputStream = ByteArrayOutputStream()
+          val buffer = ByteArray(1024)
+          var length: Int
+
+          while (inputStream.read(buffer).also { length = it } != -1) {
+              byteArrayOutputStream.write(buffer, 0, length)
+          }
+
+          val fileContents = byteArrayOutputStream.toByteArray()
+
+          when (type) {
+              "base64" -> {
+                  val base64Data = Base64.encodeToString(fileContents, Base64.NO_WRAP)
+                  promise.resolve(base64Data)
+              }
+              "arraybuffer" -> promise.resolve(fileContents)
+              "string" -> {
+                  val stringData = String(fileContents, StandardCharsets.UTF_8)
+                  promise.resolve(stringData)
+              }
+              else -> promise.reject("ERROR_STREAMING_FILE", "Invalid type specified")
+          }
+
+          zipFile.close()
+      } catch (e: Exception) {
+          promise.reject("ERROR_STREAMING_FILE", "Failed to stream the file", e)
       }
-
-      val inputStream = zipFile.getInputStream(entry)
-      val byteArrayOutputStream = ByteArrayOutputStream()
-      val buffer = ByteArray(1024)
-      var length: Int
-
-      while (inputStream.read(buffer).also { length = it } != -1) {
-        byteArrayOutputStream.write(buffer, 0, length)
-      }
-
-      val fileContents = byteArrayOutputStream.toByteArray()
-
-      when (type) {
-        "base64" -> {
-          val base64Data = Base64.encodeToString(fileContents, Base64.NO_WRAP)  // NO_WRAP prevents line breaks
-          promise.resolve(base64Data)
-        }
-        "arraybuffer" -> promise.resolve(fileContents)
-        "string" -> {
-          val stringData = String(fileContents, StandardCharsets.UTF_8)
-          promise.resolve(stringData)
-        }
-        else -> promise.reject("ERROR_STREAMING_FILE", "Invalid type specified")
-      }
-
-      zipFile.close()
-    } catch (e: Exception) {
-      promise.reject("ERROR_STREAMING_FILE", "Failed to stream the file", e)
-    }
   }
 
+
   @ReactMethod
-  fun unzipFile(zipFilePath: String, destinationPath: String, promise: Promise) {
-    try {
-      ZipFile(zipFilePath).use { zipFile ->
-        val entries = zipFile.entries()
+  fun unzipFile(zipFilePath: String, destinationPath: String, password: String?, promise: Promise) {
+      try {
+          val zipFile = ZipFile(zipFilePath)
 
-        while (entries.hasMoreElements()) {
-          val entry = entries.nextElement()
-          val outFile = File(destinationPath, entry.name)
-
-          if (entry.isDirectory) {
-            outFile.mkdirs()
-          } else {
-            zipFile.getInputStream(entry).use { inputStream ->
-              FileOutputStream(outFile).use { outputStream ->
-                val buffer = ByteArray(4096)
-                var length: Int
-                while (inputStream.read(buffer).also { length = it } != -1) {
-                  outputStream.write(buffer, 0, length)
-                }
-              }
-            }
+          if (zipFile.isEncrypted && password != null) {
+              zipFile.setPassword(password.toCharArray())
           }
-        }
 
-        promise.resolve(true)
+          zipFile.extractAll(destinationPath)
+          promise.resolve(true)
+      } catch (e: ZipException) {
+          promise.reject("ERROR_UNZIPPING_FILE", "Failed to unzip the file", e)
+      } catch (e: Exception) {
+          promise.reject("ERROR_UNZIPPING_FILE", "An error occurred", e)
       }
-    } catch (e: Exception) {
-      promise.reject("ERROR_UNZIPPING_FILE", "Failed to unzip the file", e)
-    }
   }
 
   @ReactMethod

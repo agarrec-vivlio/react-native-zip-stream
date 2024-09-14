@@ -2,7 +2,7 @@
 
 [![npm](https://img.shields.io/npm/v/react-native-zip-stream.svg?style=flat-square)](https://www.npmjs.com/package/react-native-zip-stream)
 
-A React Native module for working with ZIP archives. This module allows you to list the contents of ZIP files, stream files from ZIP archives, create new ZIP files, and unzip files with progress tracking.
+A React Native module for working with ZIP archives. This module allows you to list the contents of ZIP files, stream files from ZIP archives, create new ZIP files. Now supports password-protected ZIPs.
 
 ## Table of Contents
 
@@ -13,7 +13,6 @@ A React Native module for working with ZIP archives. This module allows you to l
   - [Stream File from Zip](#stream-file-from-zip)
   - [Unzip File](#unzip-file)
   - [Create Zip File](#create-zip-file)
-  - [Unzip File with Progress](#unzip-file-with-progress)
 - [API Reference](#api-reference)
   - [listZipContents](#listzipcontents)
   - [streamFileFromZip](#streamfilefromzip)
@@ -74,11 +73,11 @@ Lists the contents of a ZIP file. This function returns an array of file names c
 
 ### Stream File from Zip
 
-Streams a specific file from a ZIP archive. You can retrieve the file data in one of three formats: `base64`, `arraybuffer`, or `string`.
+Streams a specific file from a ZIP archive. You can retrieve the file data in one of three formats: `base64`, `arraybuffer`, or `string`. Now supports password-protected ZIPs.
 
 ### Unzip File
 
-Extracts all the contents of a ZIP file to a specified destination directory.
+Extracts all the contents of a ZIP file to a specified destination directory. Now supports password-protected ZIPs.
 
 ### Create Zip File
 
@@ -100,30 +99,36 @@ Lists the contents of a ZIP file.
 
 ### streamFileFromZip
 
-Streams a specific file from the ZIP archive.
+Streams a specific file from the ZIP archive, with optional password support.
 
 #### Parameters
 
 - `zipFilePath`: `string` - The full path to the ZIP file.
 - `entryName`: `string` - The name of the file within the ZIP archive to extract.
 - `type`: `string` (optional, default: `base64`) - The format in which to return the file data. Can be `base64`, `arraybuffer`, or `string`.
+- `password`: `string` (optional) - The password for the ZIP file, if it is encrypted.
 
 #### Returns
 
 - `Promise<string | ArrayBuffer | Uint8Array>` - A promise that resolves to the file content in the specified format.
 
+---
+
 ### unzipFile
 
-Extracts all the contents of a ZIP file to a specified destination directory.
+Extracts all the contents of a password-protected ZIP file to a specified destination directory.
 
 #### Parameters
 
 - `zipFilePath`: `string` - The full path to the ZIP file.
 - `destinationPath`: `string` - The path where the contents of the ZIP file should be extracted.
+- `password`: `string` (optional) - The password for the ZIP file, if it is encrypted.
 
 #### Returns
 
 - `Promise<boolean>` - A promise that resolves to `true` if the operation is successful.
+
+---
 
 ### createZipFile
 
@@ -157,34 +162,38 @@ const exampleListZipContents = async () => {
 };
 ```
 
-### Stream File from Zip Example
+### Stream File from Password-Protected Zip Example
 
 ```typescript
 import { streamFileFromZip } from 'react-native-zip-stream';
 
 const zipFilePath = '/path/to/your/zipfile.zip';
 const entryName = 'fileInsideZip.txt';
+const password = 'yourPassword';
 
 const exampleStreamFile = async () => {
   try {
     const base64Data = await streamFileFromZip(
       zipFilePath,
       entryName,
-      'base64'
+      'base64',
+      password
     );
     console.log('Base64 Data:', base64Data);
 
     const arrayBufferData = await streamFileFromZip(
       zipFilePath,
       entryName,
-      'arraybuffer'
+      'arraybuffer',
+      password
     );
     console.log('ArrayBuffer Data:', new Uint8Array(arrayBufferData));
 
     const stringData = await streamFileFromZip(
       zipFilePath,
       entryName,
-      'string'
+      'string',
+      password
     );
     console.log('String Data:', stringData);
   } catch (error) {
@@ -193,17 +202,18 @@ const exampleStreamFile = async () => {
 };
 ```
 
-### Unzip File Example
+### Unzip Password-Protected File Example
 
 ```typescript
 import { unzipFile } from 'react-native-zip-stream';
 
 const zipFilePath = '/path/to/your/zipfile.zip';
 const destinationPath = '/path/to/extract/';
+const password = 'yourPassword';
 
 const exampleUnzipFile = async () => {
   try {
-    const success = await unzipFile(zipFilePath, destinationPath);
+    const success = await unzipFile(zipFilePath, destinationPath, password);
     console.log('Unzip successful:', success);
   } catch (error) {
     console.error('Error unzipping file:', error);
