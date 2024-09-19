@@ -37,12 +37,13 @@ const log = (message: string, error?: any) => {
 };
 
 export const listZipContents = async (
-  zipFilePath: string
+  zipFilePath: string,
+  password?: string
 ): Promise<string[]> => {
   validateStringParam(zipFilePath, 'zipFilePath');
 
   try {
-    return await ZipStreamModule.listZipContents(zipFilePath);
+    return await ZipStreamModule.listZipContents(zipFilePath, password || null);
   } catch (error) {
     log('Error listing ZIP contents', error);
     throw error;
@@ -52,7 +53,8 @@ export const listZipContents = async (
 export const streamFileFromZip = async (
   zipFilePath: string,
   entryName: string,
-  type: 'base64' | 'arraybuffer' | 'string' = 'base64'
+  type: 'base64' | 'arraybuffer' | 'string' = 'base64',
+  password?: string
 ): Promise<string | ArrayBuffer | Uint8Array> => {
   validateStringParam(zipFilePath, 'zipFilePath');
   validateStringParam(entryName, 'entryName');
@@ -61,7 +63,8 @@ export const streamFileFromZip = async (
     return await ZipStreamModule.streamFileFromZip(
       zipFilePath,
       entryName,
-      type
+      type,
+      password || null
     );
   } catch (error) {
     log('Error streaming file from ZIP', error);
@@ -71,13 +74,18 @@ export const streamFileFromZip = async (
 
 export const unzipFile = async (
   zipFilePath: string,
-  destinationPath: string
+  destinationPath: string,
+  password?: string
 ): Promise<boolean> => {
   validateStringParam(zipFilePath, 'zipFilePath');
   validateStringParam(destinationPath, 'destinationPath');
 
   try {
-    return await ZipStreamModule.unzipFile(zipFilePath, destinationPath);
+    return await ZipStreamModule.unzipFile(
+      zipFilePath,
+      destinationPath,
+      password || null
+    );
   } catch (error) {
     log('Error unzipping file', error);
     throw error;
@@ -86,13 +94,18 @@ export const unzipFile = async (
 
 export const createZipFile = async (
   destinationPath: string,
-  sourcePath: string
+  sourcePath: string,
+  password?: string
 ): Promise<boolean> => {
   validateStringParam(destinationPath, 'destinationPath');
   validateStringParam(sourcePath, 'sourcePath');
 
   try {
-    return await ZipStreamModule.createZipFile(destinationPath, sourcePath);
+    return await ZipStreamModule.createZipFile(
+      destinationPath,
+      sourcePath,
+      password || null
+    );
   } catch (error) {
     log('Error creating ZIP file', error);
     throw error;
